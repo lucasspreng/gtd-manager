@@ -1,0 +1,12 @@
+{
+  "name": "gtd-manager",
+  "displayName": "gtd-manager",
+  "expo": {
+    "name": "gtd-manager",
+    "slug": "gtd-manager",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}

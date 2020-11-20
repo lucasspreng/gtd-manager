@@ -1,22 +1,42 @@
 module.exports = {
-    "env": {
-        "browser": true,
-        "es2021": true
+  env: {
+    browser: true,
+    es2021: true,
+  },
+  extends: [
+    "plugin:react/recommended",
+    "standard",
+    "prettier",
+    "prettier/react",
+  ],
+  globals: {
+    Atomics: "readonly",
+    SharedArrayBuffer: "readonly",
+    __DEV__: "readonly",
+  },
+  parser: "babel-eslint",
+  parserOptions: {
+    ecmaFeatures: {
+      jsx: true,
     },
-    "extends": [
-        "plugin:react/recommended",
-        "standard"
+    ecmaVersion: 12,
+    sourceType: "module",
+  },
+  plugins: ["react", "prettier"],
+  rules: {
+    "prettier/prettier": "error",
+    "react/jsx-filename-extension": [
+      "warn",
+      {
+        extensions: [".jsx", ".js"],
+      },
     ],
-    "parserOptions": {
-        "ecmaFeatures": {
-            "jsx": true
-        },
-        "ecmaVersion": 12,
-        "sourceType": "module"
-    },
-    "plugins": [
-        "react"
-    ],
-    "rules": {
-    }
+    "import/prefer-default-export": "off",
+    "react/state-in-constructor": "off",
+    "react/static-property-placement": "off",
+    "react/jsx-props-no-spreading": "off",
+    "react/prop-types": "off",
+    "no-param-reassign": "off",
+    "no-console": "off",
+  },
 };

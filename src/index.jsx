@@ -1,15 +1,16 @@
 import { createAppContainer } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
 
-import { Login, Home } from "./screens";
+import { Login, Home, ProjectList } from "./screens";
 
 const Router = createStackNavigator(
   {
     Login,
     Home,
+    ProjectList,
   },
   {
-    initialRouteName: "Login",
+    initialRouteName: "ProjectList",
     headerMode: "none",
   }
 );
