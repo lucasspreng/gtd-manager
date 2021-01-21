@@ -1,7 +1,15 @@
 import { createAppContainer } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
 
-import { Login, Home, ProjectList, Project, CategoryList } from "./screens";
+import {
+  Login,
+  Home,
+  ProjectList,
+  Project,
+  CategoryList,
+  AddCard,
+  EditCard,
+} from "./screens";
 
 const Router = createStackNavigator(
   {
@@ -10,9 +18,11 @@ const Router = createStackNavigator(
     ProjectList,
     Project,
     CategoryList,
+    AddCard,
+    EditCard,
   },
   {
-    initialRouteName: "Project",
+    initialRouteName: "ProjectList",
     headerMode: "none",
   }
 );

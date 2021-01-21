@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 import Header from "../components/Header";
 import { Button, Paragraph } from "react-native-paper";
 import { StyleSheet } from "react-native";
@@ -12,9 +12,12 @@ const Project = ({ navigation }) => {
   const project =
     navigation.state.params && navigation.state.params.project
       ? navigation.state.params.project
-      : "Uninformed";
+      : {
+          _id: 0,
+          name: "Uninformed",
+        };
 
-  const categories = [
+  const [categories, setCategories] = useState([
     {
       _id: 1,
       category: "Category 01",
@@ -22,6 +25,11 @@ const Project = ({ navigation }) => {
         {
           _id: 1,
           name: "Card 01",
+          description: "Description...",
+        },
+        {
+          _id: 2,
+          name: "Card 02",
           description: "Description...",
         },
       ],
@@ -37,13 +45,21 @@ const Project = ({ navigation }) => {
         },
       ],
     },
-  ];
+  ]);
+
+  const deleteCard = (indexCategory, card) => {
+    categories[indexCategory].cards = categories[indexCategory].cards.filter(
+      (item) => item._id !== card._id
+    );
+
+    setCategories([...categories]);
+  };
 
   return (
     <View style={styles.container}>
       <BackButton goBack={() => navigation.navigate("ProjectList")} />
       <View style={styles.header}>
-        <Header>{project}</Header>
+        <Header>{project.name}</Header>
 
         <Button
           mode="outlined"
@@ -55,31 +71,43 @@ const Project = ({ navigation }) => {
         <Button
           style={styles.addCard}
           mode="outlined"
-          onPress={() => console.log("Console...")}
+          onPress={() => navigation.navigate("AddCard")}
         >
           Add Card
         </Button>
       </View>
 
       <View style={styles.categories}>
-        {categories.map((el) => (
-          <View style={styles.category} key={el._id}>
-            <Paragraph style={styles.categoryName}>{el.category}</Paragraph>
+        {categories.map(
+          (item, index) =>
+            item.cards.length > 0 && (
+              <View style={styles.category} key={item._id}>
+                <Paragraph style={styles.categoryName}>
+                  {item.category}
+                </Paragraph>
 
-            {el.cards.map((el) => (
-              <Block style={styles.block} key={el._id}>
-                <Card
-                  item={el}
-                  horizontal
-                  navigation={navigation}
-                  rota=""
-                  onDelete={() => console.log("Console...")}
-                  onPrepareEdit={() => console.log("Console...")}
-                />
-              </Block>
-            ))}
-          </View>
-        ))}
+                {item.cards.map((el) => (
+                  <Block style={styles.block} key={el._id}>
+                    <Card
+                      item={el}
+                      horizontal
+                      navigation={navigation}
+                      rota=""
+                      onDelete={() => deleteCard(index, el)}
+                      onPrepareEdit={() =>
+                        navigation.navigate("EditCard", {
+                          card: {
+                            name: el.name,
+                            description: el.description,
+                          },
+                        })
+                      }
+                    />
+                  </Block>
+                ))}
+              </View>
+            )
+        )}
       </View>
     </View>
   );
@@ -103,8 +131,6 @@ const styles = StyleSheet.create({
   },
   categories: {
     padding: 10,
-    paddingRight: 10,
-    paddingLeft: 10,
     backgroundColor: theme.COLORS.GREY,
     borderRadius: 3,
   },
@@ -112,6 +138,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   block: {
+    maxWidth: "100%",
     marginTop: 5,
     marginBottom: 5,
   },
