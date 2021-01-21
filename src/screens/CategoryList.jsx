@@ -6,32 +6,31 @@ import { StyleSheet, View } from "react-native";
 import { theme } from "../core/theme";
 import BackButton from "../components/BackButton";
 
-const ProjectList = ({ navigation }) => {
-  const [projects, setProjects] = useState(["School", "Job", "Hobby"]);
-  const [projectName, setProjectName] = useState("");
+const CategoryList = ({ navigation }) => {
+  const [categories, setCategories] = useState([
+    "Category 01",
+    "Category 02",
+    "Category 03",
+  ]);
+  const [categoryName, setCategoryName] = useState("");
 
-  const addProject = () => {
-    setProjects([...projects, projectName]);
-    setProjectName("");
+  const addCategory = () => {
+    setCategories([...categories, categoryName]);
+    setCategoryName("");
   };
 
-  const deleteProject = (_id) => {
-    setProjects([...projects.filter((project) => project !== _id)]);
+  const deleteCategory = (_id) => {
+    setCategories([...categories.filter((project) => project !== _id)]);
   };
 
   return (
     <Background>
-      <BackButton goBack={() => navigation.navigate("Home")} />
-      <Header>My Projects</Header>
-      {projects.map((project) => (
+      <BackButton goBack={() => navigation.navigate("Project")} />
+      <Header>My Categories</Header>
+      {categories.map((project) => (
         <View style={styles.list} key={project}>
           <Button
             mode="contained"
-            onPress={() =>
-              navigation.navigate("Project", {
-                project: project,
-              })
-            }
             style={styles.listItem}
             color={Colors.grey300}
             uppercase={false}
@@ -51,7 +50,7 @@ const ProjectList = ({ navigation }) => {
             color={Colors.red500}
             size={20}
             style={styles.icon}
-            onPress={() => deleteProject(project)}
+            onPress={() => deleteCategory(project)}
           />
         </View>
       ))}
@@ -61,8 +60,8 @@ const ProjectList = ({ navigation }) => {
           selectionColor={theme.colors.primary}
           underlineColor="transparent"
           mode="outlined"
-          value={projectName}
-          onChangeText={(text) => setProjectName(text)}
+          value={categoryName}
+          onChangeText={(text) => setCategoryName(text)}
         />
         <IconButton
           icon="plus"
@@ -70,14 +69,14 @@ const ProjectList = ({ navigation }) => {
           size={30}
           mode={"contained"}
           style={styles.icon}
-          onPress={addProject}
+          onPress={addCategory}
         />
       </View>
     </Background>
   );
 };
 
-export default memo(ProjectList);
+export default memo(CategoryList);
 
 const styles = StyleSheet.create({
   listItem: {
