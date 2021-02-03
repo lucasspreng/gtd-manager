@@ -75,74 +75,76 @@ const CategoryList = (props) => {
     <Background>
       <BackButton goBack={() => navigation.navigate("Project")} />
       <Header>My Categories</Header>
-      {categories.map((category) => (
-        <View style={styles.list} key={category._id}>
-          {category._id !== categoryEdit._id ? (
-            <>
-              <Button
-                mode="contained"
-                onPress={() =>
-                  navigation.navigate("Project", {
-                    category: category,
-                  })
-                }
-                style={styles.listItem}
-                color={Colors.grey300}
-                uppercase={false}
-                compact
-              >
-                {category.name}
-              </Button>
-              <IconButton
-                icon="pencil"
-                color={Colors.blue500}
-                size={20}
-                style={styles.icon}
-                onPress={() => prepareEditCategory(category)}
-              />
-              <IconButton
-                icon="delete"
-                color={Colors.red500}
-                size={20}
-                style={styles.icon}
-                onPress={() => deleteCategory(category._id)}
-              />
-            </>
-          ) : (
-            <>
-              <TextInput
-                style={styles.input}
-                selectionColor={theme.colors.primary}
-                underlineColor="transparent"
-                mode="outlined"
-                value={categoryEdit.name}
-                onChangeText={(text) =>
-                  setCategoryEdit({ ...category, name: text })
-                }
-              />
-              <IconButton
-                icon="pencil"
-                color={Colors.amber500}
-                size={20}
-                style={styles.icon}
-                onPress={() => editCategory()}
-              />
-              <IconButton
-                icon="cancel"
-                color={Colors.red500}
-                size={20}
-                style={styles.icon}
-                onPress={() =>
-                  setCategoryEdit({
-                    _id: 0,
-                    name: "",
-                  })
-                }
-              />
-            </>
-          )}
-        </View>
-      ))}
+      {categories
+        .filter((el) => el.projectId === project._id)
+        .map((category) => (
+          <View style={styles.list} key={category._id}>
+            {category._id !== categoryEdit._id ? (
+              <>
+                <Button
+                  mode="contained"
+                  onPress={() =>
+                    navigation.navigate("Project", {
+                      category: category,
+                    })
+                  }
+                  style={styles.listItem}
+                  color={Colors.grey300}
+                  uppercase={false}
+                  compact
+                >
+                  {category.name}
+                </Button>
+                <IconButton
+                  icon="pencil"
+                  color={Colors.blue500}
+                  size={20}
+                  style={styles.icon}
+                  onPress={() => prepareEditCategory(category)}
+                />
+                <IconButton
+                  icon="delete"
+                  color={Colors.red500}
+                  size={20}
+                  style={styles.icon}
+                  onPress={() => deleteCategory(category._id)}
+                />
+              </>
+            ) : (
+              <>
+                <TextInput
+                  style={styles.input}
+                  selectionColor={theme.colors.primary}
+                  underlineColor="transparent"
+                  mode="outlined"
+                  value={categoryEdit.name}
+                  onChangeText={(text) =>
+                    setCategoryEdit({ ...category, name: text })
+                  }
+                />
+                <IconButton
+                  icon="pencil"
+                  color={Colors.amber500}
+                  size={20}
+                  style={styles.icon}
+                  onPress={() => editCategory()}
+                />
+                <IconButton
+                  icon="cancel"
+                  color={Colors.red500}
+                  size={20}
+                  style={styles.icon}
+                  onPress={() =>
+                    setCategoryEdit({
+                      _id: 0,
+                      name: "",
+                    })
+                  }
+                />
+              </>
+            )}
+          </View>
+        ))}
 
       <View style={styles.list}>
         <TextInput

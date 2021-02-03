@@ -14,7 +14,7 @@ const Login = ({ navigation }) => {
 
   return (
     <Background>
-      <BackButton goBack={() => navigation.navigate("Home")} />
+      {/* <BackButton goBack={() => navigation.navigate("Home")} /> */}
       <Logo />
 
       <Header>Welcome</Header>

@@ -22,7 +22,7 @@ const Router = createStackNavigator(
     EditCard,
   },
   {
-    initialRouteName: "ProjectList",
+    initialRouteName: "Login",
     headerMode: "none",
   }
 );

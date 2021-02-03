@@ -29,7 +29,12 @@ const reducer = (state = initialState, action) => {
         (el) => el._id === action.payload._id
       );
       return update(state, {
-        categories: { [categoryIndex]: { $merge: action.payload } },
+        categories: {
+          [categoryIndex]: {
+            name: { $set: action.payload.name },
+            category: { $set: action.payload.name },
+          },
+        },
       });
 
     case actionTypes.CARD_CREATE:

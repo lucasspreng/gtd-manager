@@ -9,9 +9,9 @@ const Home = ({ navigation }) => (
     <Button mode="outlined" onPress={() => navigation.navigate("Login")}>
       Login
     </Button>
-    <Button mode="outlined" onPress={() => navigation.navigate("ProjectList")}>
+    {/* <Button mode="outlined" onPress={() => navigation.navigate("ProjectList")}>
       Projects
-    </Button>
+    </Button> */}
   </Background>
 );
 

@@ -12,7 +12,13 @@ export const createCategory = (form, projectId) => async (dispatch) => {
 
     dispatch({
       type: actionTypes.CATEGORY_CREATE,
-      payload: { ...response.data },
+      payload: {
+        _id: response.data._id,
+        name: response.data.name,
+        category: response.data.name,
+        projectId: response.data.projectId,
+        cards: [],
+      },
     });
   } catch (e) {}
 };

@@ -37,7 +37,11 @@ export const checkToken = () => async (dispatch) => {
         _id: el._id,
         name: el.name,
         category: el.name,
-        cards: cards.data.filter((card) => card.categoryId === el._id),
+        projectId: el.projectId,
+        cards:
+          cards.data && cards.data.length > 0
+            ? cards.data.filter((card) => card.categoryId === el._id)
+            : [],
       })),
     });
 

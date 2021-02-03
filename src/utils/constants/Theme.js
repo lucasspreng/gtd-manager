@@ -6,7 +6,7 @@ const COLORS = {
   TEXT: "#FFFFFF",
   BASE: "#f5f5f5",
   INPUT: "rgba(255,255,255,0.25)",
-  DANGER: "#bd3a3a", // '#FF3636',
+  DANGER: "#FF3636", // "#bd3a3a",
   DEFAULT: "#888888",
   GREY: "rgba(226, 220, 220, 0.76)",
   LABEL: "#FE2472",

@@ -66,7 +66,7 @@ const ProjectList = (props) => {
 
   return (
     <Background>
-      <BackButton goBack={() => navigation.navigate("Home")} />
+      {/* <BackButton goBack={() => navigation.navigate("Login")} /> */}
       <Header>My Projects</Header>
       {projects.map((project) => (
         <View style={styles.list} key={project._id}>

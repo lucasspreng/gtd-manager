@@ -21,7 +21,9 @@ const Project = (props) => {
           name: "Uninformed",
         };
 
-  const [categories, setCategories] = useState(props.categories);
+  const [categories, setCategories] = useState(
+    props.categories ? props.categories : []
+  );
 
   useEffect(() => {
     if (props.auth.loading) {
@@ -58,51 +60,54 @@ const Project = (props) => {
 
       <View style={styles.scrollView}>
         <View>
-          {categories.map((item, index) => (
-            <View style={styles.categories} key={item._id}>
-              <View style={styles.category}>
-                <Paragraph style={styles.categoryName}>
-                  {item.category}
-                </Paragraph>
+          {categories &&
+            categories
+              .filter((el) => el.projectId === project._id)
+              .map((item) => (
+                <View style={styles.categories} key={item._id}>
+                  <View style={styles.category}>
+                    <Paragraph style={styles.categoryName}>
+                      {item.category}
+                    </Paragraph>
 
-                <Button
-                  style={styles.addCard}
-                  mode="outlined"
-                  onPress={() =>
-                    navigation.navigate("AddCard", {
-                      projectId: project._id,
-                      categoryId: item._id,
-                    })
-                  }
-                >
-                  Add Card
-                </Button>
-
-                {item.cards.map((el) => (
-                  <Block style={styles.block} key={el._id}>
-                    <Card
-                      item={el}
-                      horizontal
-                      navigation={navigation}
-                      rota=""
-                      onDelete={() => deleteCard(el._id, item._id)}
-                      onPrepareEdit={() =>
-                        navigation.navigate("EditCard", {
-                          card: {
-                            _id: el._id,
-                            title: el.title,
-                            description: el.description,
-                            projectId: project._id,
-                            categoryId: item._id,
-                          },
+                    <Button
+                      style={styles.addCard}
+                      mode="outlined"
+                      onPress={() =>
+                        navigation.navigate("AddCard", {
+                          projectId: project._id,
+                          categoryId: item._id,
                         })
                       }
-                    />
-                  </Block>
-                ))}
-              </View>
-            </View>
-          ))}
+                    >
+                      Add Card
+                    </Button>
+
+                    {item.cards.map((el) => (
+                      <Block style={styles.block} key={el._id}>
+                        <Card
+                          item={el}
+                          horizontal
+                          navigation={navigation}
+                          rota=""
+                          onDelete={() => deleteCard(el._id, item._id)}
+                          onPrepareEdit={() =>
+                            navigation.navigate("EditCard", {
+                              card: {
+                                _id: el._id,
+                                title: el.title,
+                                description: el.description,
+                                projectId: project._id,
+                                categoryId: item._id,
+                              },
+                            })
+                          }
+                        />
+                      </Block>
+                    ))}
+                  </View>
+                </View>
+              ))}
         </View>
       </View>
     </ScrollView>
@@ -134,7 +139,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
-    marginBottom: 30,
+    marginBottom: 10,
   },
   categories: {
     padding: 10,
