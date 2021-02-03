@@ -1,26 +1,25 @@
-import React, { memo, useState } from "react";
+import React, { useState, useEffect } from "react";
 import Background from "../components/Background";
 import Header from "../components/Header";
 import { Button, IconButton, Colors, TextInput } from "react-native-paper";
 import { StyleSheet, View } from "react-native";
 import { theme } from "../core/theme";
 import BackButton from "../components/BackButton";
+import { connect } from "react-redux";
+import * as actions from "../store/actions";
 
-const CategoryList = ({ navigation }) => {
-  const [categories, setCategories] = useState([
-    {
-      _id: 1,
-      name: "Category 01",
-    },
-    {
-      _id: 2,
-      name: "Category 02",
-    },
-    {
-      _id: 3,
-      name: "Category 03",
-    },
-  ]);
+const CategoryList = (props) => {
+  const { navigation } = props;
+
+  const project =
+    navigation.state.params && navigation.state.params.project
+      ? navigation.state.params.project
+      : {
+          _id: 0,
+          name: "Uninformed",
+        };
+
+  const [categories, setCategories] = useState(props.categories);
 
   const [category, setCategory] = useState({
     _id: 0,
@@ -32,8 +31,19 @@ const CategoryList = ({ navigation }) => {
     name: "",
   });
 
-  const addCategory = () => {
-    setCategories([...categories, { ...category, _id: categories.length + 1 }]);
+  useEffect(() => {
+    if (props.auth.loading) {
+      props.checkToken();
+    }
+  }, [props.auth.loading]);
+
+  useEffect(() => {
+    setCategories(props.categories);
+  }, [props.categories]);
+
+  const addCategory = async () => {
+    await props.onAdd(category, project._id);
+
     setCategory({
       _id: 0,
       name: "",
@@ -48,23 +58,17 @@ const CategoryList = ({ navigation }) => {
     setCategoryEdit(category);
   };
 
-  const deleteCategory = (_id) => {
-    setCategories([...categories.filter((category) => category._id !== _id)]);
+  const deleteCategory = async (_id) => {
+    await props.onDelete(_id);
   };
 
-  const editCategory = () => {
-    const index = categories.findIndex((el) => el._id === categoryEdit._id);
-
-    const helper = [...categories];
-
-    helper[index] = { ...categoryEdit };
+  const editCategory = async () => {
+    await props.onEdit(categoryEdit, project._id);
 
     setCategoryEdit({
       _id: 0,
       name: "",
     });
-
-    setCategories([...helper]);
   };
 
   return (
@@ -162,7 +166,20 @@ const CategoryList = ({ navigation }) => {
   );
 };
 
-export default memo(CategoryList);
+export default connect(
+  (state) => ({
+    categories: state.category.categories,
+    auth: state.auth,
+  }),
+  (dispatch) => ({
+    onAdd: (form, projectId) =>
+      dispatch(actions.createCategory(form, projectId)),
+    onDelete: (_id) => dispatch(actions.deleteCategory(_id)),
+    onEdit: (form, projectId) =>
+      dispatch(actions.editCategory(form, projectId)),
+    checkToken: () => dispatch(actions.checkToken()),
+  })
+)(CategoryList);
 
 const styles = StyleSheet.create({
   listItem: {

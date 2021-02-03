@@ -1,26 +1,17 @@
-import React, { memo, useState } from "react";
+import React, { useState, useEffect } from "react";
 import Background from "../components/Background";
 import Header from "../components/Header";
 import { Button, IconButton, Colors, TextInput } from "react-native-paper";
 import { StyleSheet, View } from "react-native";
 import { theme } from "../core/theme";
 import BackButton from "../components/BackButton";
+import { connect } from "react-redux";
+import * as actions from "../store/actions";
 
-const ProjectList = ({ navigation }) => {
-  const [projects, setProjects] = useState([
-    {
-      _id: 1,
-      name: "School",
-    },
-    {
-      _id: 2,
-      name: "Job",
-    },
-    {
-      _id: 3,
-      name: "Hobby",
-    },
-  ]);
+const ProjectList = (props) => {
+  const { navigation } = props;
+
+  const [projects, setProjects] = useState(props.projects);
 
   const [project, setProject] = useState({
     _id: 0,
@@ -32,12 +23,24 @@ const ProjectList = ({ navigation }) => {
     name: "",
   });
 
-  const addProject = () => {
-    setProjects([...projects, { ...project, _id: projects.length + 1 }]);
+  useEffect(() => {
+    if (props.auth.loading) {
+      props.checkToken();
+    }
+  }, [props.auth.loading]);
+
+  useEffect(() => {
+    setProjects(props.projects);
+  }, [props.projects]);
+
+  const addProject = async () => {
+    await props.onAdd(project);
+
     setProject({
       _id: 0,
       name: "",
     });
+
     setProjectEdit({
       _id: 0,
       name: "",
@@ -48,23 +51,17 @@ const ProjectList = ({ navigation }) => {
     setProjectEdit(project);
   };
 
-  const deleteProject = (_id) => {
-    setProjects([...projects.filter((project) => project._id !== _id)]);
+  const deleteProject = async (_id) => {
+    await props.onDelete(_id);
   };
 
-  const editProject = () => {
-    const index = projects.findIndex((el) => el._id === projectEdit._id);
-
-    const helper = [...projects];
-
-    helper[index] = { ...projectEdit };
+  const editProject = async () => {
+    await props.onEdit(projectEdit);
 
     setProjectEdit({
       _id: 0,
       name: "",
     });
-
-    setProjects([...helper]);
   };
 
   return (
@@ -161,7 +158,18 @@ const ProjectList = ({ navigation }) => {
   );
 };
 
-export default memo(ProjectList);
+export default connect(
+  (state) => ({
+    projects: state.project.projects,
+    auth: state.auth,
+  }),
+  (dispatch) => ({
+    onAdd: (form) => dispatch(actions.createProject(form)),
+    onDelete: (_id) => dispatch(actions.deleteProject(_id)),
+    onEdit: (form) => dispatch(actions.editProject(form)),
+    checkToken: () => dispatch(actions.checkToken()),
+  })
+)(ProjectList);
 
 const styles = StyleSheet.create({
   listItem: {

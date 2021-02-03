@@ -1,14 +1,18 @@
-import React, { memo, useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import { Button, Paragraph } from "react-native-paper";
-import { StyleSheet } from "react-native";
+import { StyleSheet, ScrollView } from "react-native";
 import BackButton from "../components/BackButton";
 import { View } from "react-native-web";
 import Block from "../components/Block";
 import Card from "../components/Card";
 import { theme } from "../utils/constants";
+import { connect } from "react-redux";
+import * as actions from "../store/actions";
 
-const Project = ({ navigation }) => {
+const Project = (props) => {
+  const { navigation } = props;
+
   const project =
     navigation.state.params && navigation.state.params.project
       ? navigation.state.params.project
@@ -17,74 +21,62 @@ const Project = ({ navigation }) => {
           name: "Uninformed",
         };
 
-  const [categories, setCategories] = useState([
-    {
-      _id: 1,
-      category: "Category 01",
-      cards: [
-        {
-          _id: 1,
-          name: "Card 01",
-          description: "Description...",
-        },
-        {
-          _id: 2,
-          name: "Card 02",
-          description: "Description...",
-        },
-      ],
-    },
-    {
-      _id: 2,
-      category: "Category 02",
-      cards: [
-        {
-          _id: 1,
-          name: "Card 01",
-          description: "Description...",
-        },
-      ],
-    },
-  ]);
+  const [categories, setCategories] = useState(props.categories);
 
-  const deleteCard = (indexCategory, card) => {
-    categories[indexCategory].cards = categories[indexCategory].cards.filter(
-      (item) => item._id !== card._id
-    );
+  useEffect(() => {
+    if (props.auth.loading) {
+      props.checkToken();
+    }
+  }, [props.auth.loading]);
 
-    setCategories([...categories]);
+  useEffect(() => {
+    setCategories(props.categories);
+  }, [props.categories]);
+
+  const deleteCard = async (_id, categoryId) => {
+    await props.onDeleteCard(_id, categoryId);
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <BackButton goBack={() => navigation.navigate("ProjectList")} />
+
       <View style={styles.header}>
         <Header>{project.name}</Header>
 
         <Button
           mode="outlined"
-          onPress={() => navigation.navigate("CategoryList")}
+          onPress={() =>
+            navigation.navigate("CategoryList", {
+              project: project,
+            })
+          }
         >
           Manage Categories
         </Button>
-
-        <Button
-          style={styles.addCard}
-          mode="outlined"
-          onPress={() => navigation.navigate("AddCard")}
-        >
-          Add Card
-        </Button>
       </View>
 
-      <View style={styles.categories}>
-        {categories.map(
-          (item, index) =>
-            item.cards.length > 0 && (
-              <View style={styles.category} key={item._id}>
+      <View style={styles.scrollView}>
+        <View>
+          {categories.map((item, index) => (
+            <View style={styles.categories} key={item._id}>
+              <View style={styles.category}>
                 <Paragraph style={styles.categoryName}>
                   {item.category}
                 </Paragraph>
+
+                <Button
+                  style={styles.addCard}
+                  mode="outlined"
+                  onPress={() =>
+                    navigation.navigate("AddCard", {
+                      projectId: project._id,
+                      categoryId: item._id,
+                    })
+                  }
+                >
+                  Add Card
+                </Button>
 
                 {item.cards.map((el) => (
                   <Block style={styles.block} key={el._id}>
@@ -93,12 +85,15 @@ const Project = ({ navigation }) => {
                       horizontal
                       navigation={navigation}
                       rota=""
-                      onDelete={() => deleteCard(index, el)}
+                      onDelete={() => deleteCard(el._id, item._id)}
                       onPrepareEdit={() =>
                         navigation.navigate("EditCard", {
                           card: {
-                            name: el.name,
+                            _id: el._id,
+                            title: el.title,
                             description: el.description,
+                            projectId: project._id,
+                            categoryId: item._id,
                           },
                         })
                       }
@@ -106,19 +101,31 @@ const Project = ({ navigation }) => {
                   </Block>
                 ))}
               </View>
-            )
-        )}
+            </View>
+          ))}
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
-export default memo(Project);
+export default connect(
+  (state) => ({
+    categories: state.category.categories,
+    auth: state.auth,
+  }),
+  (dispatch) => ({
+    onDeleteCard: (_id, categoryId) =>
+      dispatch(actions.deleteCard(_id, categoryId)),
+    checkToken: () => dispatch(actions.checkToken()),
+  })
+)(Project);
 
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    width: "100%",
+    width: "auto",
+    maxWidth: "100%",
     backgroundColor: theme.COLORS.BASE,
   },
   header: {
@@ -132,13 +139,15 @@ const styles = StyleSheet.create({
   categories: {
     padding: 10,
     backgroundColor: theme.COLORS.GREY,
+    marginBottom: 30,
     borderRadius: 3,
+    maxWidth: "100%",
   },
   category: {
     marginTop: 10,
   },
   block: {
-    maxWidth: "100%",
+    // maxWidth: "100%",
     marginTop: 5,
     marginBottom: 5,
   },

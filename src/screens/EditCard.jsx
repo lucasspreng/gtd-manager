@@ -6,16 +6,26 @@ import Button from "../components/Button";
 import TextInput from "../components/TextInput";
 import { theme } from "../core/theme";
 import BackButton from "../components/BackButton";
+import { connect } from "react-redux";
+import * as actions from "../store/actions";
 
-const EditCard = ({ navigation }) => {
+const EditCard = (props) => {
+  const { navigation } = props;
+
+  const params = navigation.state.params
+    ? navigation.state.params
+    : { projectId: undefined, categoryId: undefined };
+
   const [form, setForm] = useState(
     navigation.state.params && navigation.state.params.card
       ? navigation.state.params.card
-      : { name: "", description: "" }
+      : { _id: 0, title: "", description: "" }
   );
 
-  const onSubmit = () => {
-    navigation.navigate("Project");
+  const onSubmit = async () => {
+    await props.onEdit(form, params.projectId, params.categoryId, () =>
+      navigation.navigate("Project")
+    );
   };
 
   return (
@@ -27,8 +37,8 @@ const EditCard = ({ navigation }) => {
       <TextInput
         label="Name"
         returnKeyType="next"
-        value={form.name}
-        onChangeText={(text) => setForm({ ...form, name: text })}
+        value={form.title}
+        onChangeText={(text) => setForm({ ...form, title: text })}
         autoCapitalize="none"
       />
 
@@ -65,4 +75,13 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(EditCard);
+export default connect(
+  (state) => ({
+    auth: state.auth,
+  }),
+  (dispatch) => ({
+    onEdit: (form, projectId, categoryId, cb) =>
+      dispatch(actions.editCard(form, projectId, categoryId, cb)),
+    checkToken: () => dispatch(actions.checkToken()),
+  })
+)(EditCard);

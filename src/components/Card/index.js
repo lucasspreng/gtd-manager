@@ -63,7 +63,7 @@ class Card extends React.Component {
     return (
       <Block row={horizontal} card flex style={cardContainer}>
         <Block flex space="between" style={styles.cardDescription}>
-          {blockItem(item.name, true)}
+          {blockItem(item.title, true)}
           {blockItem(item.description, true)}
 
           <Block row space="between">

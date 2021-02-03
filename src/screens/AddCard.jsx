@@ -1,4 +1,4 @@
-import React, { memo, useState } from "react";
+import React, { useState } from "react";
 import { StyleSheet } from "react-native";
 import Background from "../components/Background";
 import Header from "../components/Header";
@@ -6,12 +6,22 @@ import Button from "../components/Button";
 import TextInput from "../components/TextInput";
 import { theme } from "../core/theme";
 import BackButton from "../components/BackButton";
+import { connect } from "react-redux";
+import * as actions from "../store/actions";
 
-const AddCard = ({ navigation }) => {
-  const [form, setForm] = useState({ name: "", description: "" });
+const AddCard = (props) => {
+  const { navigation } = props;
 
-  const onSubmit = () => {
-    navigation.navigate("Project");
+  const params = navigation.state.params
+    ? navigation.state.params
+    : { projectId: undefined, categoryId: undefined };
+
+  const [form, setForm] = useState({ title: "", description: "" });
+
+  const onSubmit = async () => {
+    await props.onAdd(form, params.projectId, params.categoryId, () =>
+      navigation.navigate("Project")
+    );
   };
 
   return (
@@ -21,10 +31,10 @@ const AddCard = ({ navigation }) => {
       <Header>Add Card</Header>
 
       <TextInput
-        label="Name"
+        label="Title"
         returnKeyType="next"
-        value={form.name}
-        onChangeText={(text) => setForm({ ...form, name: text })}
+        value={form.title}
+        onChangeText={(text) => setForm({ ...form, title: text })}
         autoCapitalize="none"
       />
 
@@ -61,4 +71,13 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(AddCard);
+export default connect(
+  (state) => ({
+    auth: state.auth,
+  }),
+  (dispatch) => ({
+    onAdd: (form, projectId, categoryId, cb) =>
+      dispatch(actions.createCard(form, projectId, categoryId, cb)),
+    checkToken: () => dispatch(actions.checkToken()),
+  })
+)(AddCard);
